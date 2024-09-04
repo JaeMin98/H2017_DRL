@@ -93,10 +93,12 @@ def Run_Training():
                 if not os.path.isdir(filePath):
                     os.makedirs(filePath)
 
-                torch.save({
-                    'model': agent.policy.state_dict(),
-                    'optimizer': agent.policy_optim.state_dict()
-                }, "./models/" + folderName + "/model_"+str(i_episode)+".tar")
+                agent.save_checkpoint("./models/" + folderName + "/model_"+str(i_episode)+".tar")
+
+                # torch.save({
+                #     'model': agent.policy.state_dict(),
+                #     'optimizer': agent.policy_optim.state_dict()
+                # }, "./models/" + folderName + "/model_"+str(i_episode)+".tar")
 
                 if(len(success_rate_list) > 4):
                     if (np.sum(success_rate_list[-min(5, len(success_rate_list)):])/5.0) >= Config.Success_Standard:
