@@ -103,6 +103,7 @@ def Run_Training():
                         if not(env.Level_Of_Point >= env.MAX_Level_Of_Point):
                             episode_success = []
                             success_rate_list = []
+                            success_rate = 0.0
                             if(Config.Is_Clearing_Memory):
                                 memory = ReplayMemory(Config.replay_size, Config.seed) # memory reset
                             env.Level_Of_Point += 1
