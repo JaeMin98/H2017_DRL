@@ -192,7 +192,7 @@ sudo rm -rf /usr/local/cuda*
 
 ## 🦾 H2017 ROS 패키지 다운로드
 
-1. [패키지 다운로드](https://drive.google.com/file/d/1KZgBUNl1ph5HkjhQQP4d1OzQcDZyZeMA/view?usp=drive_link) 후, 패키지를 `~/catkin_ws/src`에 넣습니다.
+1. [패키지 다운로드](https://drive.google.com/file/d/1nFyQVvnM9W3tftMYSuuvT2Ld22u7MT9B/view?usp=drive_link) 후, 패키지를 `~/catkin_ws/src`에 넣습니다.
 
 2. 컴파일 및 실행:
 
@@ -211,29 +211,31 @@ sudo rm -rf /usr/local/cuda*
 `~/.bashrc` 파일에 아래 라인을 추가하여 환경 설정을 편리하게 구성합니다:
 
 ```bash
-# CUDA 경로 설정
-export PATH=/usr/local/cuda-12.1/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-11.8/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+source /opt/ros/noetic/setup.bash
 
-# python3 기본 설정
 alias python=python3
 alias pip=pip3
 
-# ROS 환경 설정
 source /opt/ros/noetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 
-# 단축 명령어
+alias check_gazebo='ps aux | grep gazebo | grep -v grep'
+alias kill_gazebo='ps aux | grep gazebo | grep -v grep | awk "{print $2}" | xargs kill -9'
 alias sb="source ~/.bashrc"
 alias cm="catkin_make & source ./devel/setup.bash"
 alias rc='rosclean purge -y'
-alias run='rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
+alias run='kill_gazebo & rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
 
-# ROS IP 및 포트 설정
-# default 포트번호는 11311임
-# example) export ROS_MASTER_URI=http://192.168.0.1:11311
-export ROS_MASTER_URI=http://<IP주소>:<포트번호>
-export ROS_HOSTNAME=<IP주소>
+
+
+# input your IP
+# default PORT : 11311
+export ROS_MASTER_URI=http://192.168.1.122:11321
+export ROS_HOSTNAME=192.168.1.122
+# default PORT : 11345
+export GAZEBO_MASTER_URI=http://192.168.1.122:11355
 ```
 
 ---
