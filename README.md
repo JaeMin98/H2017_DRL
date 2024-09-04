@@ -161,7 +161,7 @@ print(torch.backends.cudnn.version())
 
 ---------------------------------------------------------
 
-## 🦾 Niryo Ned2 (Robot Arm) ROS 패키지 다운로드
+## 🦾 H2017 (Robot Arm) ROS 패키지 다운로드
 
 [ROS 패키지 공유 링크](https://drive.google.com/file/d/1KZgBUNl1ph5HkjhQQP4d1OzQcDZyZeMA/view?usp=drive_link)에서 패키지를 다운로드합니다.
 
