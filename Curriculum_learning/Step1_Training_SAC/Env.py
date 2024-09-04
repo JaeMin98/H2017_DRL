@@ -258,33 +258,28 @@ class RobotArmControl:
             set_state = rospy.ServiceProxy("/gazebo/set_model_state", SetModelState)
             resp = set_state(state_msg)    
 
-    def make_job_file(self, current_epi):
-
-        now = datetime.now()
-        date_time = "{}.{}.{}.{}".format(now.day, now.hour, now.minute, now.second)
+    def make_job_file(self, folder_name, file_name):
 
         if not(os.path.isdir(self.target_directory)):
-            self.target_directory = "Job_Files/"+ date_time
+            self.target_directory = f"Job_Files/{folder_name}"
             if not os.path.exists(self.target_directory):
                 os.makedirs(self.target_directory)
 
-        fileName = self.target_directory + "/Episode_" + str(current_epi) + ".JOB"
+        fileName = f"{self.target_directory}/{file_name}.JOB"
 
         # 파일 쓰기
         with open(fileName, 'w') as f:
-            f.write("Program File Format Version : 1.6  MechType: 370(HS220-01)  TotalAxis: 6  AuxAxis: 0\n")
             data = ''
             for i in range(0, len(self.job_list)):
-                data += "S" + str(i + 1) + "   MOVE P,S=60%,A=3,T=1  ("
+
                 for j in range(0, 6):
                     data += str(round(self.job_list[i][j], 3))
                     if j != 5:
                         data += ","
 
                     else:
-                        data += ")A\n"
+                        data += "\n"
 
             f.write(data)
-            f.write("     END")
         f.close()
         self.job_list = []

@@ -30,7 +30,6 @@ def Run_Validation(model_name = 'model_1'):
         successrate_of_UoC = []
 
         for _ in range(iteration_per_UoC):
-            episode_steps = 0
             done = False
             env.reset()
             state = env.get_state()
@@ -41,7 +40,6 @@ def Run_Validation(model_name = 'model_1'):
                 env.action(action)
                 time.sleep(Config.time_sleep_interval)
                 next_state, reward, done, success = env.observation() # Step
-                episode_steps += 1
 
                 state = next_state
 
