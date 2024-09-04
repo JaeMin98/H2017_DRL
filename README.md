@@ -171,8 +171,9 @@ roslaunch h2017 demo_gazebo.launch
 ```bash
 # CUDA 경로 지정
 # 설치된 CUDA는 cd /usr/local에서 ls로 확인 가능
-export PATH=/usr/local/cuda-(자신의 쿠다 버전)/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-(자신의 쿠다 버전)/lib64:$LD_LIBRARY_PATH
+# 12.1로 표기된 CUDA 버전은 실제로 자신이 설치한 버전을 표기해야함
+export PATH=/usr/local/cuda-12.1/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64:$LD_LIBRARY_PATH
 
 # python 3.x버전만 사용하도록 조정
 alias python=python3
