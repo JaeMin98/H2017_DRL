@@ -253,5 +253,3 @@ print(torch.backends.cudnn.version())
 ```
 
 ---
-
-이 가이드를 완료하면 H2017 로봇팔 제어를 위한 강화학습 환경이 완벽하게 구성됩니다.
