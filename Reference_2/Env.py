@@ -7,75 +7,64 @@ import moveit_msgs.msg
 import geometry_msgs.msg
 import math
 from moveit_commander.conversions import pose_to_list
+from moveit_commander import PlanningSceneInterface, RobotCommander, MoveGroupCommander
 from moveit_msgs.msg import RobotState
 from tf.transformations import quaternion_matrix
 from gazebo_msgs.msg import ModelState 
 from gazebo_msgs.srv import SetModelState
-import config
 import math
 import time
 import numpy as np
 from sensor_msgs.msg import JointState
+import pandas as pd
 
-class Ned2_control(object):
+class RobotArmControl:
     def __init__(self):
-        super(Ned2_control, self).__init__()
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node('move_group_python_interface', anonymous=True)
-        group_name = "ned2" #moveit의 move_group name >> moveit assitant로 패키지 생성 시 정의
-        move_group = moveit_commander.MoveGroupCommander(group_name) # move_group node로 동작을 계획하고,  실행 
-        self.robot = moveit_commander.RobotCommander()
-        self.move_group = move_group
+        self.move_group = MoveGroupCommander("h2017")
+        rospy.loginfo("RobotArmControl initialized successfully")
 
-        self.target = [0,0,0] #target 위치
+        self.target = [0,0,0]
 
-        # action 관련
         self.isLimited = False
-        self.Iswait = False
-        self.Limit_joint=[[-171.88,171.88],
-                            [-105.0,34.96],
-                            [-76.78,89.96],
-                            [-119.75,119.75],
-                            [-110.01,110.17],
-                            [-144.96,144.96]]
-        self.weight = [6.8, 3, 3.32, 4.8, 4.4, 5.8]
+        self.Limit_joint=[[-180.0, 180.0],
+                            [-110.0,110.0],
+                            [-140.0,140.0],
+                            [-0.1,0.1],
+                            [-0.1,0.1],
+                            [-0.1,0.1]]
 
-        # 오류 최소화를 위한 변수
-        self.prev_state = []
+        
 
-        # time_step
+        self.Iswait = True
+
+        self.weight = 20
+
         self.time_step = 0
-        self.MAX_time_step = config.MAX_STEPS
+        self.MAX_time_step = 200
 
-        self.prev_linear_velocity = [0, 0, 0]
         self.prev_distance = None
 
+        file_path = 'DataCSV/datapoints.csv'
+        self.data = pd.read_csv(file_path)
+        
     def Degree_to_Radian(self,Dinput):
-        Radian_list = []
-        for i in Dinput:
-            Radian_list.append(i* (math.pi/180.0))
-        return Radian_list
+        return np.array(Dinput) * (np.pi / 180.0)
 
     def Radian_to_Degree(self,Rinput):
-        Degree_list = []
-        for i in Rinput:
-            Degree_list.append(i* (180.0/math.pi))
-        return Degree_list
+        return np.array(Rinput) * (180.0 / np.pi)
     
     def calc_distance(self, point1, point2):
-        # 각 좌표의 차이를 제곱한 후 더한 값을 제곱근한다.
-        distance = math.sqrt((point1[0] - point2[0]) ** 2 +
-                            (point1[1] - point2[1]) ** 2 +
-                            (point1[2] - point2[2]) ** 2)
-        return distance
+        return np.linalg.norm(np.array(point1) - np.array(point2))
 
     def action(self,angle):  # angle 각도로 이동 (angle 은 크기 6의 리스트 형태)
         joint = self.move_group.get_current_joint_values()
         angle = self.Degree_to_Radian(angle)
 
-        joint[0] += (angle[0]) * self.weight[0]
-        joint[1] += (angle[1]) * self.weight[1]
-        joint[2] += (angle[2]) * self.weight[2]
+        joint[0] += (angle[0]) * self.weight
+        joint[1] += (angle[1]) * self.weight
+        joint[2] += (angle[2]) * self.weight
         joint[3] = 0
         joint[4] = 0
         joint[5] = 0
@@ -121,34 +110,32 @@ class Ned2_control(object):
         if (self.prev_distance != None ): R_extra = -1 * (distance - self.prev_distance)
         self.prev_distance = distance
 
-        isDone, isTruncated = False, False
-        if(self.time_step >= self.MAX_time_step) or (self.get_endeffector_position()[2] < 0.1):
-            isDone,isTruncated = False, True
-        if(distance <= 0.03):
-            R_done = 10
-            isDone,isTruncated = True,False
+        isDone, isSuccess = False, False
+
+        # if(self.get_endeffector_position()[2] < 0.1) or (self.isLimited == True):
+        #     R_done = -10
+        #     isDone,isSuccess = True, False
+     
+        if(self.time_step >= self.MAX_time_step):
+            R_done = 0
+            isDone,isSuccess = True, False
+
+        if(distance <= 0.05):
+            R_done = 50
+            isDone,isSuccess = True,True
 
         totalReward = R_basic + R_done + R_extra
-        return totalReward, isDone,isTruncated
+        return totalReward, isDone,isSuccess
     
     def step(self, angle):
-        time_interver = 0.05
         self.action(angle)
-        time.sleep(time_interver) #거리에 따라 조절
-        self.move_group.stop()
-
-        totalReward,isDone,isTruncated = self.get_reward()
+        totalReward,isDone,isSuccess = self.get_reward()
         current_state = self.get_state()
 
-        return current_state,totalReward,isDone, isTruncated
+        return current_state,totalReward,isDone, isSuccess
     
     def set_random_target(self):
-        random_pose = self.move_group.get_random_pose()
-        while(1):
-            if(random_pose.pose.position.z > 0.1): break
-            random_pose = self.move_group.get_random_pose()
-
-        self.target = [random_pose.pose.position.x,random_pose.pose.position.y,random_pose.pose.position.z]
+        self.target = self.data.sample(n=1).values.tolist()[0]
         self.target_reset()
 
     def target_reset(self):
@@ -169,7 +156,7 @@ class Ned2_control(object):
 
 
 if __name__ == "__main__":
-    ned2_control = Ned2_control()
+    ned2_control = RobotArmControl()
     rospy.sleep(1)  # 초기화 시간 대기
 
     # # 테스트 코드

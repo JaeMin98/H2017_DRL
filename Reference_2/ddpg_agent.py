@@ -12,7 +12,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 BUFFER_SIZE = 1000000  # replay buffer size
-BATCH_SIZE = 2048       # minibatch size
+BATCH_SIZE = 1024       # minibatch size
 GAMMA = 0.99            # discount factor
 TAU = 5e-3              # for soft update of target parameters
 LR_ACTOR = 0.00015         # learning rate of the actor 
@@ -36,7 +36,6 @@ class Agent():
         """
         self.state_size = state_size
         self.action_size = action_size
-        self.agent_critic_loss = None
         self.seed = random.seed(random_seed)
 
         # Actor Network (w/ Target Network)
@@ -66,7 +65,9 @@ class Agent():
         if len(self.memory) > BATCH_SIZE:
             if((timestep % UPDATE_INTERVER) == 0):
                 experiences = self.memory.sample()
-                self.learn(experiences, GAMMA)
+                critic_loss = self.learn(experiences, GAMMA)
+
+        return critic_loss
 
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
@@ -123,7 +124,7 @@ class Agent():
         self.soft_update(self.critic_local, self.critic_target, TAU)
         self.soft_update(self.actor_local, self.actor_target, TAU) 
 
-        self.agent_critic_loss = critic_loss.item()              
+        return critic_loss              
 
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.

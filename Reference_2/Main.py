@@ -4,29 +4,31 @@ from ddpg_agent import Agent
 import torch
 import wandb
 
-wandb.init(project='Refer2')
-wandb.run.name = 'DDPG_V2.0'
+wandb.init(project='H2017_Refer2')
+wandb.run.name = 'DDPG'
 wandb.run.save()
 
-env = Env.Ned2_control()
+env = Env.RobotArmControl()
 agent = Agent(state_size=6, action_size=3, random_seed=123456)
 
 episode_success, success_rate_list = [], []
 
-def ddpg(n_episodes=40000, max_t=200):
+def ddpg(n_episodes=100000, max_t=200):
     for i_episode in range(1, n_episodes+1):
         env.reset()
         states = env.get_state()
         agent.reset()
 
         scores = 0
+        episode_ciritic_loss = None
         for timestep in range(max_t):
             if len(agent.memory) < agent.memory.batch_size * 10:
                 actions = np.random.uniform(-1, 1, size=3)
             else:
                 actions = agent.act(np.array(states), add_noise=True)
             next_states, rewards, dones, success = env.step(actions)
-            agent.step(states, actions, rewards, next_states, dones, timestep)
+            ciritic_loss = agent.step(np.array([states]), np.array([actions]), np.array([rewards]), np.array([next_states]), np.array([dones]), timestep)
+            if(ciritic_loss != None) : episode_ciritic_loss = ciritic_loss
             states = next_states
             scores += rewards
             if np.any(dones):
@@ -41,8 +43,8 @@ def ddpg(n_episodes=40000, max_t=200):
             'success_rate': success_rate,
             'memory_size': len(agent.memory),
         }
-        if agent.critic_loss is not None:
-            log_data['critic_loss'] = agent.critic_loss
+        if(episode_ciritic_loss != None):
+            wandb.log({'ciritic_loss':episode_ciritic_loss}, step=i_episode)
 
         wandb.log(log_data, step=i_episode)
 
