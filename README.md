@@ -1,18 +1,44 @@
-# 🤖 H2017 DRL
 
-본 README는 H2017 로봇팔 제어 강화학습을 위한 환경 설정 방법에 대해 설명합니다. 여기에는 운영체제 설치부터 각종 필수 소프트웨어 설치, 그리고 ROS 작업공간 설정 및 편의 설정에 이르기까지의 과정을 포함하고 있습니다.
+# 🤖 H2017 로봇팔 제어 강화학습 환경 설정
+
+이 가이드는 H2017 로봇팔 제어를 위한 강화학습 환경을 단계별로 설정하는 방법을 제공합니다. 운영체제 설치부터 ROS, MoveIt 설치, 그래픽 드라이버 및 CUDA 설정까지 모두 포함되어 있습니다.
+
+---
+
+## 📋 목차
+
+1. [운영체제 설치](#운영체제-설치)
+2. [ROS 설치](#ros-설치)
+3. [MoveIt 설치](#moveit-설치)
+4. [ROS 작업공간 설정](#ros-작업공간-설정)
+5. [ROS 패키지 생성](#ros-패키지-생성)
+6. [선택 옵션](#선택-옵션)
+   - 시스템 업데이트
+   - 한국어 키보드 설정
+   - pip 설치
+   - 추가 프로그램 설치
+7. [그래픽 드라이버 및 CUDA 설치](#그래픽-드라이버-및-cuda-설치)
+8. [H2017 ROS 패키지 다운로드](#h2017-ros-패키지-다운로드)
+9. [bashrc 설정](#bashrc-설정)
+10. [PyTorch 및 CUDA 확인](#pytorch-및-cuda-확인)
+
+---
 
 ## 💻 운영체제 설치
 
-운영체제 설치 가이드는 [여기](https://blog.naver.com/jm_0820/223001100698)를 참고하십시오.
+운영체제 설치는 [이 가이드](https://blog.naver.com/jm_0820/223001100698)를 참고하여 진행합니다.
+
+---
 
 ## 🛠️ ROS 설치
 
-ROS Noetic 설치 방법은 [여기](http://wiki.ros.org/noetic/Installation/Ubuntu)에서 확인할 수 있습니다.
+ROS Noetic을 설치하려면 [ROS Noetic 설치 가이드](http://wiki.ros.org/noetic/Installation/Ubuntu)를 참고하십시오.
 
-## 🦾 Moveit 설치
+---
 
-다음 명령어를 사용하여 Moveit을 설치하십시오:
+## 🦾 MoveIt 설치
+
+MoveIt과 관련 패키지를 설치하려면 다음 명령어를 실행하십시오:
 
 ```bash
 sudo apt install ros-noetic-moveit
@@ -20,31 +46,58 @@ sudo apt-get install ros-noetic-joint-trajectory-controller
 sudo apt-get install ros-noetic-rosbridge-server
 ```
 
+---
+
 ## 📁 ROS 작업공간 설정
 
-ROS 작업공간 설정 방법은 [여기](http://wiki.ros.org/ko/catkin/Tutorials/create_a_workspace)를 참고하십시오.
-```bash
-source /opt/ros/noetic/setup.sh
-mkdir -p ~/catkin_ws/src
-cd ~/catkin_ws/src
-catkin_init_workspace
-cd ~/catkin_ws/
-catkin_make
-source devel/setup.bash
-```
+ROS 작업공간을 설정하려면 다음 단계를 따릅니다:
+
+1. ROS 환경을 불러오기:
+
+    ```bash
+    source /opt/ros/noetic/setup.sh
+    ```
+
+2. 작업공간 생성 및 초기화:
+
+    ```bash
+    mkdir -p ~/catkin_ws/src
+    cd ~/catkin_ws/src
+    catkin_init_workspace
+    ```
+
+3. 컴파일 및 환경 설정:
+
+    ```bash
+    cd ~/catkin_ws
+    catkin_make
+    source devel/setup.bash
+    ```
+
+[자세한 가이드](http://wiki.ros.org/ko/catkin/Tutorials/create_a_workspace)도 참고 가능합니다.
+
+---
 
 ## 📁 ROS 패키지 생성
 
-```bash
-cd ~/catkin_ws/src
-catkin_create_pkg my_package
-cd ~/catkin_ws/
-catkin_make
-source devel/setup.bash
-```
----------------------------------------------------------
+1. ROS 패키지를 생성하려면:
 
-## ⚙️ 옵션
+    ```bash
+    cd ~/catkin_ws/src
+    catkin_create_pkg my_package
+    ```
+
+2. 패키지 컴파일 및 환경 설정:
+
+    ```bash
+    cd ~/catkin_ws
+    catkin_make
+    source devel/setup.bash
+    ```
+
+---
+
+## ⚙️ 선택 옵션
 
 ### 📅 시스템 업데이트
 
@@ -55,7 +108,7 @@ sudo apt-get upgrade
 
 ### ⌨️ 한국어 키보드 설정
 
-[한국어 키보드 설정 가이드](https://shanepark.tistory.com/231)를 참고하십시오.
+[한국어 키보드 설정 가이드](https://shanepark.tistory.com/231)를 참고하여 설정하십시오.
 
 ### 🐍 pip 설치
 
@@ -65,25 +118,22 @@ sudo apt-get install python3-pip
 
 ### 💻 추가 프로그램 설치
 
-아래 링크를 통해 추가 프로그램을 설치할 수 있습니다:
+필요한 추가 프로그램을 설치할 수 있습니다:
 
 - [GitHub Desktop](https://gist.github.com/berkorbay/6feda478a00b0432d13f1fc0a50467f1)
 - [TeamViewer](https://www.teamviewer.com/ko/download/linux/)
-- [VScode](https://code.visualstudio.com/download)
+- [VSCode](https://code.visualstudio.com/download)
 
 ```bash
-# KVM 스위치 소프트웨어 (barrier) 설치
-sudo apt install barrier -y
-
-# 편의성이 향상된 터미널 (terminator) 설치
-sudo apt-get install terminator
+sudo apt install barrier -y  # KVM 스위치 소프트웨어
+sudo apt-get install terminator  # 편리한 터미널
 ```
 
----------------------------------------------------------
+---
 
-## 🎨 그래픽 드라이버 및 CUDA 및 cuDNN 설치
+## 🎨 그래픽 드라이버 및 CUDA 설치
 
-### 🚮 기존에 설치된 그래픽 드라이버 제거
+### 🚮 기존 그래픽 드라이버 제거
 
 ```bash
 sudo apt --purge remove *nvidia*
@@ -94,115 +144,101 @@ sudo rm -rf /usr/local/cuda*
 
 ### 🎯 그래픽 드라이버 설치
 
-```bash
-# 설치 가능한 드라이버 확인
-ubuntu-drivers devices
+1. 설치 가능한 드라이버 확인:
 
-# 버전 선택 후 설치
-sudo apt-get install nvidia-driver-(Version, ex 470)
-sudo apt-get install dkms nvidia-modprobe
+    ```bash
+    ubuntu-drivers devices
+    ```
 
-sudo apt-get update
-sudo apt-get upgrade
+2. 드라이버 설치:
 
-sudo reboot now
+    ```bash
+    sudo apt-get install nvidia-driver-<버전번호>
+    sudo apt-get install dkms nvidia-modprobe
+    sudo apt-get update
+    sudo apt-get upgrade
+    sudo reboot now
+    ```
 
-# 그래픽 드라이버 설치 확인 및 추천 CUDA 버전 확인
-nvidia-smi
-```
+3. 설치 확인:
 
-### 🖥️ CUDA 설치 (11.8 혹은 12.1 설치 권장)
+    ```bash
+    nvidia-smi
+    ```
 
-[GPU Driver와 CUDA 버전 호환성 확인](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id4) 후 설치합니다.
+### 🖥️ CUDA 설치
 
-```bash
-sudo apt install nvidia-cuda-toolkit
-```
+1. CUDA 설치:
 
-[CUDA 설치 가이드](https://developer.nvidia.com/cuda-toolkit-archive)를 참고하여 설치합니다.<br/><br/>
-설치 옵션 중 "runfile (local)"을 추천하며, runfile 다운로드 후 실행전 chmod 777 권한을 부여 후 실행하는 것을 권장합니다.
+    ```bash
+    sudo apt install nvidia-cuda-toolkit
+    ```
 
-```bash
-nvcc -V
-# 만약 버전이 나오지 않는다면 "bash 편의설정" 1 참조
-```
+2. [CUDA 설치 가이드](https://developer.nvidia.com/cuda-toolkit-archive)를 참고하여 설치를 진행합니다.
+
+3. 설치 확인:
+
+    ```bash
+    nvcc -V
+    ```
 
 ### 💾 cuDNN 설치
 
-[cuDNN 버전 호환성 확인](https://en.wikipedia.org/wiki/CUDA#GPUs_supported) 후 설치합니다.
+[cuDNN 설치 가이드](https://developer.nvidia.com/rdp/cudnn-archive)를 참고하여 설치합니다.
 
-[cuDNN 설치 가이드](https://developer.nvidia.com/rdp/cudnn-archive)를 참고하십시오.<br/><br/>
-"Local Installer for Ubuntu20.04 x86_64 (Deb)"과같은 deb형식의 파일 추천
+---
 
-```bash
-sudo apt update
+## 🦾 H2017 ROS 패키지 다운로드
 
-# 만약 에러 발생 시
-sudo rm /etc/apt/sources.list.d/cuda*
-sudo rm /etc/apt/sources.list.d/cudnn*
-```
+1. [패키지 다운로드](https://drive.google.com/file/d/1KZgBUNl1ph5HkjhQQP4d1OzQcDZyZeMA/view?usp=drive_link) 후, 패키지를 `~/catkin_ws/src`에 넣습니다.
 
-### 🔥 PyTorch 설치 (Python 3.9 이상 권장)
+2. 컴파일 및 실행:
 
-[CUDA 호환 PyTorch 설치 가이드](https://pytorch.org/get-started/locally/)를 참고하여 설치합니다.<br/><br/>
+    ```bash
+    cd ~/catkin_ws
+    catkin_make
+    source ./devel/setup.bash
+    source ~/.bashrc
+    roslaunch h2017 demo_gazebo.launch
+    ```
 
+---
 
----------------------------------------------------------
+## 🛠️ bashrc 설정
 
-## 🦾 H2017 (Robot Arm) ROS 패키지 다운로드
-
-[ROS 패키지 공유 링크](https://drive.google.com/file/d/1KZgBUNl1ph5HkjhQQP4d1OzQcDZyZeMA/view?usp=drive_link)에서 패키지를 다운로드합니다.
-
-```bash
-# 압축을 풀고 ~/catkin_ws/src에 넣기
-cd ~/catkin_ws
-catkin_make
-source ./devel/setup.bash
-source ~/.bashrc
-roslaunch h2017 demo_gazebo.launch
-```
-
----------------------------------------------------------
-
-## 🛠️ bashrc 편의설정
-
-`gedit ~/.bashrc` 명령어로 bashrc 파일을 편집하고, 맨 아래에 다음 라인을 추가합니다:
+`~/.bashrc` 파일에 아래 라인을 추가하여 환경 설정을 편리하게 구성합니다:
 
 ```bash
-# CUDA 경로 지정
-# 설치된 CUDA는 cd /usr/local에서 ls로 확인 가능
-# 12.1로 표기된 CUDA 버전은 실제로 자신이 설치한 버전을 표기해야함
+# CUDA 경로 설정
 export PATH=/usr/local/cuda-12.1/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64:$LD_LIBRARY_PATH
 
-# python 3.x버전만 사용하도록 조정
+# python3 기본 설정
 alias python=python3
 alias pip=pip3
 
-# ROS setup
+# ROS 환경 설정
 source /opt/ros/noetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 
-# ROS 단축어 설정
+# 단축 명령어
 alias sb="source ~/.bashrc"
 alias cm="catkin_make & source ./devel/setup.bash"
 alias rc='rosclean purge -y'
 alias run='rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
 
-# ROS IP 및 포트 지정, 같은 로컬 네트워크에서 서로 겹치지 않게 하는 역할
-# ifconfig로 자신의 IP 확인 가능
-export ROS_MASTER_URI=http://(자신의 IP):(사용하고자하는 포트번호, default = 11311)
-# example) export ROS_MASTER_URI=http://192.168.0.121:11311
-export ROS_HOSTNAME=(자신의 IP)
-# example) export ROS_HOSTNAME=192.168.0.121
+# ROS IP 및 포트 설정
+# default 포트번호는 11311임
+# example) export ROS_MASTER_URI=http://192.168.0.1:11311
+export ROS_MASTER_URI=http://<IP주소>:<포트번호>
+export ROS_HOSTNAME=<IP주소>
 ```
 
+---
 
----------------------------------------------------------
+## 🔥 PyTorch 및 CUDA 확인
 
-### PyTorch와 python을 활용한 CUDA, CUDNN 가용 여부 확인
-
-아래 코드를 실행하여 CUDA와 cuDNN 인식 여부를 확인합니다:
+다음 Python 코드를 실행하여 CUDA와 cuDNN이 올바르게 설정되었는지 확인합니다:
 
 ```python
 import torch
@@ -215,3 +251,7 @@ if torch.cuda.is_available():
 print(torch.backends.cudnn.enabled)
 print(torch.backends.cudnn.version())
 ```
+
+---
+
+이 가이드를 완료하면 H2017 로봇팔 제어를 위한 강화학습 환경이 완벽하게 구성됩니다.
