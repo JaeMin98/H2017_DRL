@@ -145,19 +145,7 @@ sudo rm /etc/apt/sources.list.d/cudnn*
 ### 🔥 PyTorch 설치 (Python 3.9 이상 권장)
 
 [CUDA 호환 PyTorch 설치 가이드](https://pytorch.org/get-started/locally/)를 참고하여 설치합니다.<br/><br/>
-아래 코드를 실행하여 CUDA와 cuDNN 인식 여부를 확인합니다:
 
-```python
-import torch
-
-print(torch.cuda.is_available())
-if torch.cuda.is_available():
-    print(torch.cuda.current_device())
-    print(torch.cuda.get_device_name(torch.cuda.current_device()))
-
-print(torch.backends.cudnn.enabled)
-print(torch.backends.cudnn.version())
-```
 
 ---------------------------------------------------------
 
@@ -206,4 +194,23 @@ export ROS_MASTER_URI=http://(자신의 IP):(사용하고자하는 포트번호,
 # example) export ROS_MASTER_URI=http://192.168.0.121:11311
 export ROS_HOSTNAME=(자신의 IP)
 # example) export ROS_HOSTNAME=192.168.0.121
+```
+
+
+---------------------------------------------------------
+
+### PyTorch와 python을 활용한 CUDA, CUDNN 가용 여부 확인
+
+아래 코드를 실행하여 CUDA와 cuDNN 인식 여부를 확인합니다:
+
+```python
+import torch
+
+print(torch.cuda.is_available())
+if torch.cuda.is_available():
+    print(torch.cuda.current_device())
+    print(torch.cuda.get_device_name(torch.cuda.current_device()))
+
+print(torch.backends.cudnn.enabled)
+print(torch.backends.cudnn.version())
 ```
