@@ -39,7 +39,7 @@ class RobotArmControl:
 
         self.Iswait = True
 
-        self.weight = 20
+        self.weight = 5
 
         self.time_step = 0
         self.MAX_time_step = 200
