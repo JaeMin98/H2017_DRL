@@ -4,7 +4,7 @@
 env_name = 'H2017'
 policy = "Gaussian"
 
-eval = True
+eval = False
 gamma = 0.99
 tau = 0.005
 lr = 0.00015
@@ -26,7 +26,7 @@ batch_size = 4096
 start_steps = 30000
 max_episode_steps = 128
 time_sleep_interval = 0.00
-action_weight = 10
+action_weight = 20
 
 isExit_IfSuccessLearning = False #목표 달성 시(success rate 0.9이상일 때) 학습을 종료할 것인지
 

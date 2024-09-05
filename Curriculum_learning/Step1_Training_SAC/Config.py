@@ -23,10 +23,10 @@ Success_Standard = 0.9
 
 num_steps = 10000001
 batch_size = 4096
-start_steps = 30000
-max_episode_steps = 128
+start_steps = 10000
+max_episode_steps = 200
 time_sleep_interval = 0.00
-action_weight = 10
+action_weight = 1.5
 
 isExit_IfSuccessLearning = False #목표 달성 시(success rate 0.9이상일 때) 학습을 종료할 것인지
 

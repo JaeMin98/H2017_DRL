@@ -63,9 +63,9 @@ class RobotArmControl:
 
         
         ## reward weight ##
-        self.Success_weight = 0.7
-        self.Distance_weight = 3
-        self.Limited_weight = 0.3
+        self.Success_weight = 1
+        self.Distance_weight = 1
+        self.Limited_weight = 1
         self.Negative_DF = 1.01
         self.Positive_DF = 0.99
 
@@ -208,7 +208,7 @@ class RobotArmControl:
 
             isFinished = True
             isComplete = 1  
-            rewardS = 50 + (12.5 * self.Level_Of_Point)
+            rewardS = 100 + (12.5 * self.Level_Of_Point)
             
 
         # 제한 범위 외로 이동 시
