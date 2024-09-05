@@ -10,7 +10,7 @@ tau = 0.005
 lr = 0.00015
 alpha = 0.2
 
-automatic_entropy_tuning = True
+automatic_entropy_tuning = False
 seed = 123456
 
 hidden_size = 64
