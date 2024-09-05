@@ -5,6 +5,8 @@ import wandb
 import datetime
 import Config
 import os
+from ou_noise import OUNoise
+
 
 class DDPG:
     def __init__(self, n_episodes=Config.n_episodes, max_t=Config.max_episode_steps):
@@ -44,7 +46,7 @@ class DDPG:
         self.episode_success = []
         self.success_rate_list = []
         self.agent.memory.reset()
-        self.agent.noise.reset()
+        self.agent.noise = OUNoise(3, 123456)
         self.env.Level_Of_Point += 1
 
     def run_episode(self):

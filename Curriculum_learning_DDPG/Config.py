@@ -20,7 +20,7 @@ HIDDEN_SIZE = 64
 Current_Data_Selection_Ratio = 0.8
 n_episodes = 100000
 max_episode_steps = 200
-action_weight = 1.5
+action_weight = 2.0
 
 
 #
