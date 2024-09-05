@@ -3,23 +3,23 @@ import Config
 import Env
 import time
 import csv
+import torch
 
-
-def Run_Validation(model_name = 'model_1'):
+def Run_Validation(model_name = 'SAC_7113epi_weight20'):
     # Environment
     env = Env.RobotArmControl()
     env.reset()
 
     # Agent
     agent = SAC(9, 3, Config)
-    model_name = 'model_1'
-    model_path = f'models/{model_name}.tar'
-    agent.load_checkpoint(model_path,evaluate=False)
+    model_path = f'trained_models/{model_name}.tar'
+    
+    # agent.load_checkpoint(model_path,evaluate=False)
     # agent.load_checkpoint(model_path,evaluate=False)
 
-    # checkpoint = torch.load(model_path)
-    # agent.policy.load_state_dict(checkpoint['model'])
-    # agent.policy_optim.load_state_dict(checkpoint['optimizer'])
+    checkpoint = torch.load(model_path)
+    agent.policy.load_state_dict(checkpoint['model'])
+    agent.policy_optim.load_state_dict(checkpoint['optimizer'])
 
     iteration_per_UoC = 100
     successrate_of_model = []
@@ -62,4 +62,4 @@ def save_successrate_to_csv(successrate_of_model, filename):
     print(f"Success rates saved to {filename}")
 
 if __name__ == '__main__':
-    Run_Validation()
+    Run_Validation('SAC_7113epi_weight20')
