@@ -15,7 +15,6 @@ def Run_Validation(model_name = 'SAC_7113epi_weight20'):
     model_path = f'trained_models/{model_name}.tar'
     
     # agent.load_checkpoint(model_path,evaluate=False)
-    # agent.load_checkpoint(model_path,evaluate=False)
 
     checkpoint = torch.load(model_path)
     agent.policy.load_state_dict(checkpoint['model'])
