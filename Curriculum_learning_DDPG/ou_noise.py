@@ -5,7 +5,7 @@ import copy
 class OUNoise():
     """ Ornstein-Uhlenbeck process """
 
-    def __init__(self, size, seed, mu=0.0, theta=0.1, sigma=0.5, sigma_min=0.05, sigma_decay=0.99):
+    def __init__(self, size, seed, mu=0.0, theta=0.15, sigma=0.5, sigma_min=0.03, sigma_decay=0.9973):
         """ Initialize parameters and noise process """
         self.mu = mu * np.ones(size)
         self.theta = theta 

@@ -34,7 +34,7 @@ class RobotArmControl:
         self.MAX_Level_Of_Point = 4
         self.Level_Of_Point = 0
         self.Limit_joint = [[-180.0, 180.0], [-110.0, 110.0], [-140.0, 140.0]]
-        self.goalDistance = 10.1
+        self.goalDistance = 0.1
         self.prev_state = []
         self.prev_distance = None
         self.time_step = 0
