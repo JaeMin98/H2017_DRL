@@ -164,27 +164,36 @@ sudo rm -rf /usr/local/cuda*
     nvidia-smi
     ```
 
-### 🖥️ CUDA 설치
+### 🖥️ CUDA 설치 (11.8 혹은 12.1 설치 권장)
 
-1. CUDA 설치:
+[GPU Driver와 CUDA 버전 호환성 확인](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id4) 후 설치합니다.
 
-    ```bash
-    sudo apt install nvidia-cuda-toolkit
-    ```
+```bash
+sudo apt install nvidia-cuda-toolkit
+```
 
-2. [CUDA 설치 가이드](https://developer.nvidia.com/cuda-toolkit-archive)를 참고하여 설치를 진행합니다.
+[CUDA 설치 가이드](https://developer.nvidia.com/cuda-toolkit-archive)를 참고하여 설치합니다.<br/><br/>
+설치 옵션 중 "runfile (local)"을 추천하며, runfile 다운로드 후 실행전 chmod 777 권한을 부여 후 실행하는 것을 권장합니다.
 
-3. 설치 확인:
-
-    ```bash
-    nvcc -V
-    ```
+```bash
+nvcc -V
+# 만약 버전이 나오지 않는다면 "bash 편의설정" 1 참조
+```
 
 ### 💾 cuDNN 설치
 
-[cuDNN 설치 가이드](https://developer.nvidia.com/rdp/cudnn-archive)를 참고하여 설치합니다.
+[cuDNN 버전 호환성 확인](https://en.wikipedia.org/wiki/CUDA#GPUs_supported) 후 설치합니다.
 
----
+[cuDNN 설치 가이드](https://developer.nvidia.com/rdp/cudnn-archive)를 참고하십시오.<br/><br/>
+"Local Installer for Ubuntu20.04 x86_64 (Deb)"과같은 deb형식의 파일 추천
+
+```bash
+sudo apt update
+
+# 만약 에러 발생 시
+sudo rm /etc/apt/sources.list.d/cuda*
+sudo rm /etc/apt/sources.list.d/cudnn*
+```
 
 ## 🦾 H2017 ROS 패키지 다운로드
 
