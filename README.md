@@ -212,7 +212,7 @@ sudo rm -rf /usr/local/cuda*
 
 ## 🦾 H2017 ROS 패키지 다운로드
 
-1. [패키지 다운로드](https://drive.google.com/file/d/1nFyQVvnM9W3tftMYSuuvT2Ld22u7MT9B/view?usp=drive_link) 후, 패키지를 `~/catkin_ws/src`에 넣습니다.
+1. [패키지 다운로드](https://drive.google.com/file/d/1WegURoWhEUYmu9ryMMx_myGjUmXnEEFA/view?usp=drive_link) 후, 패키지를 `~/catkin_ws/src`에 넣습니다.
 
 2. 컴파일 및 실행:
 
