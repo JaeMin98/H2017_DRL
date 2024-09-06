@@ -222,8 +222,6 @@ alias cm="catkin_make & source ./devel/setup.bash"
 alias rc='rosclean purge -y'
 alias run='rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
 
-
-
 # input your IP
 # default PORT : 11311
 export ROS_MASTER_URI=http://192.168.1.122:11321
