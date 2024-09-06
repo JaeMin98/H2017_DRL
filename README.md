@@ -192,7 +192,7 @@ sudo rm -rf /usr/local/cuda*
 
 1. [cuDNN 버전 호환성 확인](https://en.wikipedia.org/wiki/CUDA#GPUs_supported).
 
-2. [cuDNN 설치 가이드](https://developer.nvidia.com/rdp/cudnn-archive)를 참고하십시오.
+2. [cuDNN 설치 가이드](https://developer.nvidia.com/rdp/cudnn-archive)를 참고하여 설치하세요.
 
 3. "Local Installer for Ubuntu20.04 x86_64 (Deb)"와 같은 deb 형식의 파일을 다운로드합니다.
 
