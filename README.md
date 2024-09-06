@@ -207,8 +207,8 @@ sudo rm -rf /usr/local/cuda*
 `~/.bashrc` 파일에 아래 라인을 추가하여 환경 설정을 편리하게 구성합니다:
 
 ```bash
-export PATH=/usr/local/cuda-11.8/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-11.8/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-<CUDA version>/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-<CUDA version>/lib64:$LD_LIBRARY_PATH
 source /opt/ros/noetic/setup.bash
 
 alias python=python3
@@ -224,10 +224,10 @@ alias run='rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
 
 # input your IP
 # default PORT : 11311
-export ROS_MASTER_URI=http://192.168.1.122:11321
-export ROS_HOSTNAME=192.168.1.122
+export ROS_MASTER_URI=http://<IP>:11311
+export ROS_HOSTNAME=<IP>
 # default PORT : 11345
-export GAZEBO_MASTER_URI=http://192.168.1.122:11355
+export GAZEBO_MASTER_URI=http://<IP>:11345
 ```
 
 ---
