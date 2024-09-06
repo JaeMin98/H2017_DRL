@@ -140,7 +140,7 @@ sudo apt-get autoclean
 sudo rm -rf /usr/local/cuda*
 ```
 
-### 🎯 그래픽 드라이버 설치
+### 1️⃣ 그래픽 드라이버 설치
 
 1. 설치 가능한 드라이버 확인:
 
@@ -164,7 +164,7 @@ sudo rm -rf /usr/local/cuda*
     nvidia-smi
     ```
 
-### 1️⃣ CUDA 설치 (11.8 혹은 12.1 설치 권장)
+### 2️⃣ CUDA 설치 (11.8 혹은 12.1 설치 권장)
 
 1. [GPU Driver와 CUDA 버전 호환성 확인](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#id4).
 2. 아래 명령어를 실행하여 nvidia cuda toolkit을 설치합니다.
@@ -188,7 +188,7 @@ sudo rm -rf /usr/local/cuda*
     nvcc -V
     ```
 
-### 2️⃣ cuDNN 설치
+### 3️⃣ cuDNN 설치
 
 1. [cuDNN 버전 호환성 확인](https://en.wikipedia.org/wiki/CUDA#GPUs_supported).
 
