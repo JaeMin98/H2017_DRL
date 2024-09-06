@@ -38,6 +38,8 @@ class RobotArmControl:
         self.prev_state = []
         self.prev_distance = None
         self.time_step = 0
+        self.apply_collision = True
+        self.collision_detected = False
 
     def degree_to_radian(self, degree_input):
         return [math.radians(d) for d in degree_input]
@@ -46,6 +48,7 @@ class RobotArmControl:
         return [math.degrees(r) for r in radian_input]
 
     def action(self, angle):
+        
         joint = self.get_state()[:6]
         for i in range(3):
             joint[i] += angle[i] * Config.action_weight
@@ -55,10 +58,11 @@ class RobotArmControl:
             joint[i] = max(self.Limit_joint[i][0], min(joint[i], self.Limit_joint[i][1]))
 
         try:
-            self.move_group.go(self.degree_to_radian(joint), wait=True)
+            plan = self.move_group.go(self.degree_to_radian(joint), wait=True)
         except:
-            print(f"move_group.go EXCEPT, {joint}")
+            plan = False
 
+        self.collision_detected = not plan
         self.time_step += 1
             
     def reset(self):
@@ -99,14 +103,20 @@ class RobotArmControl:
         R_extra = -1 * (d - self.prev_distance) if self.prev_distance is not None else 0
         self.prev_distance = d
 
-        isFinished = self.time_step >= Config.max_episode_steps
+        isFinished = (self.time_step >= Config.max_episode_steps)
+        isComplete = False
 
         if d <= self.goalDistance:
             isFinished = True
             rewardS = 50
+            isComplete = True
+
+        if(self.apply_collision):
+            if(self.collision_detected):
+                isFinished = True
+                rewardS += -500
 
         totalReward = rewardS + rewardD + R_extra
-        isComplete = int(d <= self.goalDistance)
 
         return totalReward, isFinished, isComplete
 
