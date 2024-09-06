@@ -57,10 +57,8 @@ def Run_Training():
                 action = random_list  # random action
             else:
                 action = agent.select_action(state)  # action from policy
-
-            env.action(action)
-            time.sleep(Config.time_sleep_interval)
-            next_state, reward, done, success = env.observation() # Step
+                
+            next_state, reward, done, success = env.step(action) # Step
             episode_steps += 1
             total_numsteps += 1
             episode_reward += reward

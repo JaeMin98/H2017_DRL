@@ -7,8 +7,8 @@ policy = "Gaussian"
 eval = True
 gamma = 0.99
 tau = 0.005
-lr = 0.00015
-alpha = 0.2
+lr = 0.0003
+alpha = 0.25
 
 automatic_entropy_tuning = False
 seed = 123456
@@ -26,7 +26,7 @@ batch_size = 4096
 start_steps = 10000
 max_episode_steps = 200
 time_sleep_interval = 0.00
-action_weight = 1.5
+action_weight = 2.0
 
 isExit_IfSuccessLearning = False #목표 달성 시(success rate 0.9이상일 때) 학습을 종료할 것인지
 
