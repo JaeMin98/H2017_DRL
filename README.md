@@ -15,10 +15,10 @@
 4. [ROS 작업공간 설정](#ros-작업공간-설정)
 5. [ROS 패키지 생성](#ros-패키지-생성)
 6. [선택 옵션](#선택-옵션)
-   - 시스템 업데이트
-   - 한국어 키보드 설정
-   - pip 설치
-   - 추가 프로그램 설치
+   - [시스템 업데이트](#시스템-업데이트)
+   - [한국어 키보드 설정](#한국어-키보드-설정)
+   - [pip 설치](#pip-설치)
+   - [추가 프로그램 설치](#추가-프로그램-설치)
 7. [그래픽 드라이버 및 CUDA 설치](#그래픽-드라이버-및-cuda-설치)
 8. [H2017 ROS 패키지 다운로드](#h2017-ros-패키지-다운로드)
 9. [bashrc 설정](#bashrc-설정)
@@ -221,12 +221,10 @@ alias pip=pip3
 source /opt/ros/noetic/setup.bash
 source ~/catkin_ws/devel/setup.bash
 
-alias check_gazebo='ps aux | grep gazebo | grep -v grep'
-alias kill_gazebo='ps aux | grep gazebo | grep -v grep | awk "{print $2}" | xargs kill -9'
 alias sb="source ~/.bashrc"
 alias cm="catkin_make & source ./devel/setup.bash"
 alias rc='rosclean purge -y'
-alias run='kill_gazebo & rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
+alias run='rosclean purge -y & roslaunch h2017 demo_gazebo.launch'
 
 
 
