@@ -39,9 +39,9 @@ ROS Noetic을 설치하려면 [ROS Noetic 설치 가이드](http://wiki.ros.org/
 MoveIt과 관련 패키지를 설치하려면 다음 명령어를 실행하십시오:
 
 ```bash
-sudo apt install ros-noetic-moveit
-sudo apt-get install ros-noetic-joint-trajectory-controller
-sudo apt-get install ros-noetic-rosbridge-server
+sudo apt install ros-noetic-moveit -y
+sudo apt-get install ros-noetic-joint-trajectory-controller -y
+sudo apt-get install ros-noetic-rosbridge-server -y
 ```
 
 ---
