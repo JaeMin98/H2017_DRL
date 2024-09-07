@@ -17,7 +17,7 @@ class DDPG:
         self.episode_success = []
         self.success_rate_list = []
         self.folder_name = f'models/DDPG_{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}_{Config.Current_Data_Selection_Ratio}_{Config.action_weight}'
-        self.memory_threshold = self.agent.memory.batch_size * 10
+        self.memory_threshold = self.agent.memory.batch_size * 1
 
     def create_environment(self):
         return Env.RobotArmControl()
