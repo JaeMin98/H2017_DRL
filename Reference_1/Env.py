@@ -35,6 +35,7 @@ class RobotArmControl:
         self.time_step = 0
         self.apply_collision = True
         self.collision_detected = False
+        self.weight = Config.action_weight
 
     def degree_to_radian(self, degree_input):
         return [math.radians(d) for d in degree_input]
@@ -90,7 +91,7 @@ class RobotArmControl:
         
         joint = self.get_state()[:6]
         for i in range(3):
-            joint[i] += angle[i] * Config.action_weight
+            joint[i] += angle[i] * self.weight
         joint[3:6] = [0, 0, 0]
 
         for i in range(len(self.Limit_joint)):
@@ -169,7 +170,7 @@ class RobotArmControl:
         if(self.time_step >= 200):
             isDone,IsSuccess = True, False
 
-        if(distance <= 0.1):
+        if(distance <= self.goalDistance):
             R_distance += 60
             isDone,IsSuccess = True,True
         elif(self.collision_detected):
