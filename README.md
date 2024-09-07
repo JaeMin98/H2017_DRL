@@ -152,7 +152,7 @@ sudo rm -rf /usr/local/cuda*
 
     ```bash
     sudo apt-get install nvidia-driver-<버전번호>
-    sudo apt-get install dkms nvidia-modprobe
+    sudo apt-get install dkms nvidia-modprobe -y
     sudo apt-get update
     sudo apt-get upgrade
     sudo reboot now
@@ -170,7 +170,7 @@ sudo rm -rf /usr/local/cuda*
 2. 아래 명령어를 실행하여 nvidia cuda toolkit을 설치합니다.
 
     ```bash
-    sudo apt install nvidia-cuda-toolkit
+    sudo apt install nvidia-cuda-toolkit -y
     ```
 
 3. [CUDA 설치 가이드](https://developer.nvidia.com/cuda-toolkit-archive)를 참고하여 설치합니다.
@@ -256,8 +256,8 @@ export GAZEBO_MASTER_URI=http://<IP>:11345
 
 ---
 
-## 🔥 PyTorch 및 CUDA 확인
-
+## 🔥 PyTorch 설치 및 CUDA 확인
+[CUDA 호환 PyTorch 설치 가이드](https://pytorch.org/get-started/locally/)를 참고하여 설치합니다.<br/><br/>
 다음 Python 코드를 실행하여 CUDA와 cuDNN이 올바르게 설정되었는지 확인합니다:
 
 ```python
