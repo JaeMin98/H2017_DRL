@@ -107,7 +107,7 @@ class RobotArmControl:
         if(self.apply_collision):
             if(self.collision_detected):
                 isFinished = True
-                rewardS += -500
+                rewardS -= -500
 
         totalReward = rewardS + rewardD + R_extra
 
