@@ -111,7 +111,7 @@ sudo apt-get upgrade
 ### 🐍 pip 설치
 
 ```bash
-sudo apt-get install python3-pip
+sudo apt-get install python3-pip -y
 ```
 
 ### 💻 추가 프로그램 설치
@@ -124,7 +124,7 @@ sudo apt-get install python3-pip
 
 ```bash
 sudo apt install barrier -y  # KVM 스위치 소프트웨어
-sudo apt-get install terminator  # 편리한 터미널
+sudo apt-get install terminator -y  # 편리한 터미널
 ```
 
 ---
