@@ -1,21 +1,17 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import sys
 import rospy
-import moveit_commander #Python Moveit interface를 사용하기 위한 모듈
-import moveit_msgs.msg
-import geometry_msgs.msg
+import moveit_commander
+import random
 import math
-from moveit_commander.conversions import pose_to_list
-from moveit_commander import PlanningSceneInterface, RobotCommander, MoveGroupCommander
-from moveit_msgs.msg import RobotState
-from tf.transformations import quaternion_matrix
+import csv
+from moveit_commander import MoveGroupCommander
 from gazebo_msgs.msg import ModelState 
 from gazebo_msgs.srv import SetModelState
-import math
-import time
-import numpy as np
-from sensor_msgs.msg import JointState
+import Config
 import pandas as pd
 
 class RobotArmControl:
@@ -24,144 +20,115 @@ class RobotArmControl:
         rospy.init_node('move_group_python_interface', anonymous=True)
         self.move_group = MoveGroupCommander("h2017")
         rospy.loginfo("RobotArmControl initialized successfully")
-
-        self.target = [0,0,0]
-
-        self.isLimited = False
-        self.Limit_joint=[[-180.0, 180.0],
-                            [-110.0,110.0],
-                            [-140.0,140.0],
-                            [-0.1,0.1],
-                            [-0.1,0.1],
-                            [-0.1,0.1]]
-
         
+        self.load_points()
+        self.initialize_parameters()
 
-        self.Iswait = True
-
-        self.weight = 5
-
-        self.time_step = 0
-        self.MAX_time_step = 200
-
-        self.prev_distance = None
-
+    def load_points(self):
         file_path = 'DataCSV/datapoints.csv'
         self.data = pd.read_csv(file_path)
+
+    def initialize_parameters(self):
+        self.Limit_joint = [[-180.0, 180.0], [-110.0, 110.0], [-140.0, 140.0]]
+        self.goalDistance = 0.1
+        self.prev_state = []
+        self.prev_distance = None
+        self.time_step = 0
+        self.apply_collision = True
+        self.collision_detected = False
+
+    def degree_to_radian(self, degree_input):
+        return [math.radians(d) for d in degree_input]
+
+    def radian_to_degree(self, radian_input):
+        return [math.degrees(r) for r in radian_input]
+
+    def action(self, angle):
         
-    def Degree_to_Radian(self,Dinput):
-        return np.array(Dinput) * (np.pi / 180.0)
-
-    def Radian_to_Degree(self,Rinput):
-        return np.array(Rinput) * (180.0 / np.pi)
-    
-    def calc_distance(self, point1, point2):
-        return np.linalg.norm(np.array(point1) - np.array(point2))
-
-    def action(self,angle):  # angle 각도로 이동 (angle 은 크기 6의 리스트 형태)
-        joint = self.move_group.get_current_joint_values()
-        angle = self.Degree_to_Radian(angle)
-
-        joint[0] += (angle[0]) * self.weight
-        joint[1] += (angle[1]) * self.weight
-        joint[2] += (angle[2]) * self.weight
-        joint[3] = 0
-        joint[4] = 0
-        joint[5] = 0
+        joint = self.get_state()[:6]
+        for i in range(3):
+            joint[i] += angle[i] * Config.action_weight
+        joint[3:6] = [0, 0, 0]
 
         for i in range(len(self.Limit_joint)):
-            if(self.Limit_joint[i][1] < joint[i]):
-                joint[i] = self.Limit_joint[i][1]
-            elif(self.Limit_joint[i][0] > joint[i]):
-                joint[i] = self.Limit_joint[i][0]
+            joint[i] = max(self.Limit_joint[i][0], min(joint[i], self.Limit_joint[i][1]))
 
         try:
-            self.move_group.go(joint, wait=self.Iswait)
+            plan = self.move_group.go(self.degree_to_radian(joint), wait=True)
         except:
-            # print("move_group.go EXCEPT, ", joint)
-            self.isLimited = True
+            plan = False
 
+        self.collision_detected = not plan
         self.time_step += 1
             
     def reset(self):
         self.time_step = 0
-        self.prev_distance = None
-        self.isLimited = False
-        self.move_group.go([0,0,0,0,0,0], wait=True)
-        self.set_random_target()
+        self.move_group.go([0, 0, 0, 0, 0, 0], wait=True)
         
-    
-    def get_endeffector_position(self):
-        pose = self.move_group.get_current_pose().pose
-        pose_value = [pose.position.x,pose.position.y,pose.position.z]
-        return pose_value
-    
-    def get_state(self):
-        joint = self.move_group.get_current_joint_values()
-        state = joint[0:3] + self.target
-        return state
+        self.set_random_target()
 
-    def get_reward(self):
-        distance = self.calc_distance(self.get_endeffector_position(), self.target)
-
-        R_basic= -1 * distance
-        R_done= 0
-        R_extra = 0
-        if (self.prev_distance != None ): R_extra = -1 * (distance - self.prev_distance)
-        self.prev_distance = distance
-
-        isDone, isSuccess = False, False
-
-        # if(self.get_endeffector_position()[2] < 0.1) or (self.isLimited == True):
-        #     R_done = -10
-        #     isDone,isSuccess = True, False
-     
-        if(self.time_step >= self.MAX_time_step):
-            R_done = 0
-            isDone,isSuccess = True, False
-
-        if(distance <= 0.05):
-            R_done = 50
-            isDone,isSuccess = True,True
-
-        totalReward = R_basic + R_done + R_extra
-        return totalReward, isDone,isSuccess
-    
-    def step(self, angle):
-        self.action(angle)
-        totalReward,isDone,isSuccess = self.get_reward()
-        current_state = self.get_state()
-
-        return current_state,totalReward,isDone, isSuccess
-    
     def set_random_target(self):
         self.target = self.data.sample(n=1).values.tolist()[0]
         self.target_reset()
 
+    def get_state(self):
+        try:
+            joint = self.move_group.get_current_joint_values()
+            state = joint[0:3] + self.target
+            if len(state) == 6:
+                self.prev_state = state
+            else:
+                state = self.prev_state
+        except:
+            state = self.prev_state
+        return state
+
+    def get_pose(self):
+        pose = self.move_group.get_current_pose().pose
+        return [pose.position.x, pose.position.y, pose.position.z]
+    
+    def get_reward(self):
+        end_effector = self.get_pose()
+        d = math.sqrt(sum((e - t)**2 for e, t in zip(end_effector, self.target)))
+
+        rewardS = 0
+        rewardD = -d
+        R_extra = -1 * (d - self.prev_distance) if self.prev_distance is not None else 0
+        self.prev_distance = d
+
+        isFinished = (self.time_step >= Config.max_episode_steps)
+        isComplete = False
+
+        if d <= self.goalDistance:
+            isFinished = True
+            rewardS = 50
+            isComplete = True
+
+        if(self.apply_collision):
+            if(self.collision_detected):
+                isFinished = True
+                rewardS += -500
+
+        totalReward = rewardS + rewardD + R_extra
+
+        return totalReward, isFinished, isComplete
+
+    def observation(self):
+        totalReward, isFinished, isComplete = self.get_reward()
+        current_state = self.get_state()
+        return current_state, totalReward, isFinished, isComplete
+    
+    def step(self, actions):
+        self.action(actions)
+        return self.observation()
+    
     def target_reset(self):
         state_msg = ModelState()
         state_msg.model_name = 'cube'
-        state_msg.pose.position.x = self.target[0]
-        state_msg.pose.position.y = self.target[1]
-        state_msg.pose.position.z = self.target[2]
-        state_msg.pose.orientation.x = 0
-        state_msg.pose.orientation.y = 0
-        state_msg.pose.orientation.z = 0
-        state_msg.pose.orientation.w = 0
+        state_msg.pose.position.x, state_msg.pose.position.y, state_msg.pose.position.z = self.target
+        state_msg.pose.orientation.x = state_msg.pose.orientation.y = state_msg.pose.orientation.z = state_msg.pose.orientation.w = 0
 
         rospy.wait_for_service('/gazebo/set_model_state')
-        for i in range(100):
-            set_state = rospy.ServiceProxy("/gazebo/set_model_state", SetModelState)
-            resp = set_state(state_msg)    
-
-
-if __name__ == "__main__":
-    ned2_control = RobotArmControl()
-    rospy.sleep(1)  # 초기화 시간 대기
-
-    # # 테스트 코드
-    ned2_control.reset()
-
-    while not rospy.is_shutdown():
-        ned2_control.step([0.0, -0.3, 0.35, 0, 0, 0])
-        print(ned2_control.get_joint3_position())
+        set_state = rospy.ServiceProxy("/gazebo/set_model_state", SetModelState)
+        for _ in range(500):
+            set_state(state_msg)

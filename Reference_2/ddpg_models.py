@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import Config
 
 def hidden_init(layer):
     """ outputs the limits for the values in the hidden layer for initialisation"""
@@ -13,7 +14,7 @@ def hidden_init(layer):
 class Actor(nn.Module):
     """Actor (Policy) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1_units=64, fc2_units=64):
+    def __init__(self, state_size, action_size, seed, fc1_units=Config.HIDDEN_SIZE, fc2_units=Config.HIDDEN_SIZE):
         """Initialize parameters and build model.
         Params
         ======
@@ -49,7 +50,7 @@ class Actor(nn.Module):
 class Critic(nn.Module):
     """Critic (Value) Model."""
 
-    def __init__(self, state_size, action_size, seed, fc1_units=64, fc2_units=64):
+    def __init__(self, state_size, action_size, seed, fc1_units=Config.HIDDEN_SIZE, fc2_units=Config.HIDDEN_SIZE):
         """Initialize parameters and build model.
         Params
         ======

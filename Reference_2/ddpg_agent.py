@@ -10,15 +10,17 @@ from replay_buffer import ReplayBuffer
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+import Config
+import os
 
-BUFFER_SIZE = 1000000  # replay buffer size
-BATCH_SIZE = 1024       # minibatch size
-GAMMA = 0.99            # discount factor
-TAU = 5e-3              # for soft update of target parameters
-LR_ACTOR = 0.00015         # learning rate of the actor 
-LR_CRITIC = 0.0003        # learning rate of the critic
-WEIGHT_DECAY = 0        # L2 weight decay
-UPDATE_INTERVER = 2
+BUFFER_SIZE = Config.BUFFER_SIZE  # replay buffer size
+BATCH_SIZE = Config.BATCH_SIZE       # minibatch size
+GAMMA = Config.GAMMA          # discount factor
+TAU = Config.TAU             # for soft update of target parameters
+LR_ACTOR = Config.LR_ACTOR         # learning rate of the actor 
+LR_CRITIC = Config.LR_CRITIC        # learning rate of the critic
+WEIGHT_DECAY = Config.WEIGHT_DECAY        # L2 weight decay
+UPDATE_INTERVER = Config.UPDATE_INTERVER
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -137,3 +139,38 @@ class Agent():
         """
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
+
+
+    def save_checkpoint(self, ckpt_path):
+        torch.save({
+            'actor_local_state_dict': self.actor_local.state_dict(),
+            'actor_target_state_dict': self.actor_target.state_dict(),
+            'critic_local_state_dict': self.critic_local.state_dict(),
+            'critic_target_state_dict': self.critic_target.state_dict(),
+            'actor_optimizer_state_dict': self.actor_optimizer.state_dict(),
+            'critic_optimizer_state_dict': self.critic_optimizer.state_dict()
+        }, ckpt_path)
+        
+    def load_checkpoint(self, ckpt_path, evaluate=False):
+        print(f'Loading models from {ckpt_path}, evaluate : {evaluate}')
+        if ckpt_path is not None:
+            checkpoint = torch.load(ckpt_path)
+            self.actor_local.load_state_dict(checkpoint['actor_local_state_dict'])
+            self.actor_target.load_state_dict(checkpoint['actor_target_state_dict'])
+            self.critic_local.load_state_dict(checkpoint['critic_local_state_dict'])
+            self.critic_target.load_state_dict(checkpoint['critic_target_state_dict'])
+            self.actor_optimizer.load_state_dict(checkpoint['actor_optimizer_state_dict'])
+            self.critic_optimizer.load_state_dict(checkpoint['critic_optimizer_state_dict'])
+
+            if evaluate:
+                self.actor_local.eval()
+                self.actor_target.eval()
+                self.critic_local.eval()
+                self.critic_target.eval()
+            else:
+                self.actor_local.train()
+                self.actor_target.train()
+                self.critic_local.train()
+                self.critic_target.train()
+            
+            print('Checkpoint loaded successfully')

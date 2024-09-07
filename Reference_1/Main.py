@@ -1,65 +1,99 @@
 import Env
 import numpy as np
-from ddpg_agent import Agent 
-from collections import deque
-import torch
-import torch.nn.functional as F
-import torch.optim as optim
-import time
+from ddpg_agent import Agent
 import wandb
+import datetime
+import Config
+import os
+from ou_noise import OUNoise
 
-wandb.init(project='H2017_Refer1')
-wandb.run.name = 'DDPG'
-wandb.run.save()
 
-env = Env.RobotArmControl()
-agent = Agent(state_size=15, action_size=3, random_seed=123456)
+class DDPG:
+    def __init__(self, n_episodes=Config.n_episodes, max_t=Config.max_episode_steps):
+        self.n_episodes = n_episodes
+        self.max_t = max_t
+        self.env = self.create_environment()
+        self.agent = self.create_agent(state_size=15, action_size=3, random_seed=123456)
+        self.episode_success = []
+        self.success_rate_list = []
+        self.folder_name = f'models/DDPG_{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}_{Config.Current_Data_Selection_Ratio}_{Config.action_weight}'
+        self.memory_threshold = self.agent.memory.batch_size * 10
 
-episode_success, success_rate_list = [], []
+    def create_environment(self):
+        return Env.RobotArmControl()
 
-def ddpg(n_episodes=100000, max_t=200):
-    for i_episode in range(1, n_episodes+1):
-        env.reset()
-        states = env.get_state()
-        agent.reset()
+    def create_agent(self, state_size, action_size, random_seed):
+        return Agent(state_size, action_size, random_seed)
 
+    def get_action(self, states):
+        if len(self.agent.memory) < self.memory_threshold:
+            return np.random.uniform(-1, 1, size=3)
+        return self.agent.act(np.array(states), add_noise=True)
+
+    def update_agent(self, states, actions, rewards, next_states, dones, timestep):
+        return self.agent.step(np.array([states]), np.array([actions]), np.array([rewards]),
+                               np.array([next_states]), np.array([dones]), timestep)
+
+    def log_wandb(self, log_data, step):
+        wandb.log(log_data, step=step)
+
+    def should_increase_level(self):
+        if len(self.success_rate_list) > 15 and np.mean(self.success_rate_list[-5:]) >= 0.9:
+            return True
+        return False
+
+    def run_episode(self):
+        self.env.reset()
+        states = self.env.get_state()
+        self.agent.reset()
         scores = 0
-        episode_ciritic_loss = None
-        for timestep in range(max_t):
-            if len(agent.memory) < agent.memory.batch_size * 10:
-                actions = np.random.uniform(-1, 1, size=3)  # 랜덤 액션
-            else:
-                actions = agent.act(np.array(states), add_noise=True)
-            next_states, rewards, dones, success = env.step(actions)  # 새로운 env.step() 반환 값에 맞춰 수정
-            ciritic_loss = agent.step(np.array([states]), np.array([actions]), np.array([rewards]), np.array([next_states]), np.array([dones]), timestep)
-            if(ciritic_loss != None) : episode_ciritic_loss = ciritic_loss
+        episode_critic_loss = None
+        for timestep in range(self.max_t):
+            actions = self.get_action(states)
+            next_states, rewards, dones, success = self.env.step(actions)
+            critic_loss = self.update_agent(states, actions, rewards, next_states, dones, timestep)
+            if critic_loss is not None:
+                episode_critic_loss = critic_loss
             states = next_states
             scores += rewards
             if np.any(dones):
                 break
+        return scores, success, episode_critic_loss
 
-        if(episode_ciritic_loss != None):
-            wandb.log({'ciritic_loss':episode_ciritic_loss}, step=i_episode)
+    def save_checkpoint(self, episode):
+        if not os.path.exists(self.folder_name):
+            os.makedirs(self.folder_name)
+        ckpt_path = os.path.join(self.folder_name, f'{episode}.tar')
+        self.agent.save_checkpoint(ckpt_path)
 
-        episode_success.append(success)
-        success_rate = np.mean(episode_success[-min(10, len(episode_success)):])
-        success_rate_list.append(success_rate)
-        wandb.log({'success_rate':success_rate}, step=i_episode)
+    def train(self):
+        for i_episode in range(1, self.n_episodes + 1):
+            scores, success, episode_critic_loss = self.run_episode()
+            self.episode_success.append(success)
+            success_rate = np.mean(self.episode_success[-min(10, len(self.episode_success)):])
+            self.success_rate_list.append(success_rate)
 
-        print(f"Episode: {i_episode}, Reward: {scores}")
-        wandb.log({'episode_reward':scores}, step=i_episode)
-        wandb.log({'memory size':len(agent.memory)}, step=i_episode)
+            log_data = {
+                'episode_reward': scores,
+                'success_rate': success_rate,
+                'memory_size': len(self.agent.memory),
+            }
+            self.log_wandb(log_data, i_episode)
 
-        if(success):
-            torch.save(agent.actor_local.state_dict(), f'./models/{i_episode}_actor.pth')
-            torch.save(agent.critic_local.state_dict(), f'./models/{i_episode}_critic.pth')
+            if episode_critic_loss is not None:
+                self.log_wandb({'critic_loss': episode_critic_loss}, i_episode)
 
-        if(len(success_rate_list) > 4):
-            if np.mean(success_rate_list[-min(5, len(success_rate_list)):]) >= 0.9:
-                torch.save(agent.actor_local.state_dict(), 'actor_solved.pth')
-                torch.save(agent.critic_local.state_dict(), 'critic_solved.pth')
+            print(f"Episode: {i_episode}, Reward: {scores}")
 
+            if success:
+                self.save_checkpoint(i_episode)
 
+            if self.should_increase_level():
+                break
 
 if __name__ == "__main__":
-    ddpg()
+    wandb.init(project='H2017_Refer1')
+    wandb.run.name = 'DDPG'
+    wandb.run.save()
+    ddpg = DDPG()
+    ddpg.train()

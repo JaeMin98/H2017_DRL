@@ -2,35 +2,26 @@ import numpy as np
 import random
 from collections import namedtuple, deque
 import torch
-import torch.nn.functional as F 
-import torch.optim as optim 
-
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class ReplayBuffer:
-    """Fixed-size buffer to store experience tuples."""
-
     def __init__(self, action_size, buffer_size, batch_size, seed):
-        """Initialize a ReplayBuffer object.
-        Params
-        ======
-            buffer_size (int): maximum size of buffer
-            batch_size (int): size of each training batch
-        """
         self.action_size = action_size
-        self.memory = deque(maxlen=buffer_size)  # internal memory (deque)
+        self.buffer_size = buffer_size
+        self.memory = deque(maxlen=buffer_size)
         self.batch_size = batch_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
         self.seed = random.seed(seed)
+
+    def reset(self):
+        self.memory = deque(maxlen=self.buffer_size)
     
     def add(self, state, action, reward, next_state, done):
-        """Add a new experience to memory."""
         e = self.experience(state, action, reward, next_state, done)
         self.memory.append(e)
     
     def sample(self):
-        """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
 
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
@@ -41,11 +32,5 @@ class ReplayBuffer:
 
         return (states, actions, rewards, next_states, dones)
 
-    # def sample(self):
-    #     batch = random.sample(self.memory, self.batch_size)
-    #     states, actions, rewards, next_states, dones = map(np.stack, zip(*batch))
-    #     return (states, actions, rewards, next_states, dones)
-
     def __len__(self):
-        """Return the current size of internal memory."""
         return len(self.memory)
