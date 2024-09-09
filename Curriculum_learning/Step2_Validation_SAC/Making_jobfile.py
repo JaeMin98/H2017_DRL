@@ -59,7 +59,6 @@ def Run_Validation(model_name, target, target_count):
     date_time = "{}.{}.{}.{}".format(now.day, now.hour, now.minute, now.second)
     env.make_job_file(f"{target_count+1}, XYZ:{str(target[0])},{str(target[1])},{str(target[2])}", f"nodes:{len(env.job_list)}, {date_time}")
 
-    return len(env.job_list)
 
 
 def write_list_to_csv(data, filename):
@@ -69,12 +68,11 @@ def write_list_to_csv(data, filename):
             writer.writerow([item])  # 각 항목을 리스트로 감싸 1열로 작성
     
 if __name__ == '__main__':
-    csv_content = read_csv_file('matching_rows.csv')
-    jobfile_node = []
-    for i in range (len(csv_content)) :
-        node = Run_Validation('trained_models/SAC_7113epi_weight20.tar', csv_content[i], i)
-        print(node)
-        jobfile_node.append(node)
 
-    write_list_to_csv(jobfile_node, 'jobfile_nodes.csv')
+    csv_content = read_csv_file('matching_rows.csv')
+
+    for _ in range(100):
+        for i in range (len(csv_content)) :
+            node = Run_Validation('trained_models/SAC_7113epi_weight20.tar', csv_content[i], i)
+
     
