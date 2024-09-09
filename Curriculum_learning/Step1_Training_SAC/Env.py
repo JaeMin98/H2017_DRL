@@ -32,7 +32,7 @@ class RobotArmControl:
 
     def initialize_parameters(self):
         self.MAX_Level_Of_Point = 4
-        self.Level_Of_Point = 0
+        self.Level_Of_Point = 4
         self.Limit_joint = [[-180.0, 180.0], [-110.0, 110.0], [-140.0, 140.0]]
         self.goalDistance = 0.1
         self.prev_state = []
