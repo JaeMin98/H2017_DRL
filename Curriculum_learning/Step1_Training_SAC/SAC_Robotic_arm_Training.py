@@ -52,12 +52,14 @@ def Run_Training():
         state = env.get_state()
 
         while not done:
-            if Config.start_steps > total_numsteps:
-                random_values = np.random.uniform(-1, 1, size=3)
-                random_list = random_values.tolist()
-                action = random_list  # random action
-            else:
-                action = agent.select_action(state)  # action from policy
+            # if Config.start_steps > total_numsteps:
+            #     random_values = np.random.uniform(-1, 1, size=3)
+            #     random_list = random_values.tolist()
+            #     action = random_list  # random action
+            # else:
+            #     action = agent.select_action(state)  # action from policy
+
+            action = agent.select_action(state)
                 
             next_state, reward, done, success = env.step(action) # Step
             episode_steps += 1
