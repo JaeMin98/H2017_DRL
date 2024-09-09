@@ -29,7 +29,7 @@ class RobotArmControl:
 
     def initialize_parameters(self):
         self.Limit_joint = [[-180.0, 180.0], [-110.0, 110.0], [-140.0, 140.0]]
-        self.goalDistance = 0.1
+        self.goalDistance = 0.05
         self.prev_state = []
         self.prev_distance = None
         self.time_step = 0
