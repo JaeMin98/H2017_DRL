@@ -23,6 +23,7 @@ def Run_Training():
 
     # Agent
     agent = SAC(9, 3, Config)
+    agent.load_checkpoint('model_11000.tar')
 
     # Memory
     memory = ReplayMemory(Config.replay_size, Config.seed)
